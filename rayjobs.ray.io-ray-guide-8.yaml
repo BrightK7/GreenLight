@@ -1,0 +1,304 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  annotations:
+    queuing-millisec: "1717404670301"
+    soc.shopee.io/priority: "5"
+    soc.shopee.io/quota-name: off-lea-job-default-158
+    soc.shopee.io/rayjob-log-dir: /ray_job/log
+    soc.shopee.io/resource-type: offline
+  creationTimestamp: "2024-06-03T08:51:17Z"
+  finalizers:
+  - ray.io/rayjob-finalizer
+  generation: 1
+  labels:
+    controlled-by: soc
+    job-id: "3113703"
+    job-name: ray-guide-8
+    app: ray-guide-label
+    project-id: "158"
+    project-name: batch-process
+    soc.shopee.io/quota-name: off-lea-job-default-158
+    soc.shopee.io/resource-type: offline
+    tenant-id: "5648"
+    tenant-name: ai_platform
+  name: ray-guide-10
+  namespace: aip-svc-158
+spec:
+  entrypoint: python /home/work/code/ray-user-guide/batch_inference/batch_inference_by_ray.py
+  rayClusterSpec:
+    headGroupSpec:
+      enableIngress: true
+      rayStartParams:
+        metrics-export-port: "9090"
+      template:
+        metadata:
+          annotations:
+            execcmd: bash
+            package-type: gpu
+            prometheus.io/path: /metrics
+            prometheus.io/port: "9090"
+            prometheus.io/scrape: "true"
+            shopee.com/cni.vpc-id: aip-platform-live-git
+            soc.shopee.io/quota-name: off-lea-job-default-158
+            soc.shopee.io/resource-type: offline
+          labels:
+            controlled-by: soc
+            job-id: "3113703"
+            job-name: ray-guide-8
+            package-type: gpu
+            project-id: "158"
+            project-name: batch-process
+            soc.shopee.io/quota-name: off-lea-job-default-158
+            soc.shopee.io/resource-type: offline
+            task-name: head
+            app: ray-guide-label
+            tenant-id: "5648"
+            tenant-name: ai_platform
+        spec:
+          containers:
+          - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SOC_QUOTA_EPHEMERAL_STORAGE
+              value: "85899345920"
+            image: harbor.shopeemobile.com/aip/aip-image-hub/aip-grey/projects/74/ray-sample:ray-demo-6bc97f9727
+            imagePullPolicy: IfNotPresent
+            name: main
+            securityContext:
+              capabilities:
+                add:
+                - SYS_PTRACE
+            resources:
+              limits:
+                cpu: "10"
+                ephemeral-storage: 100Gi
+                memory: 20Gi
+                quota.shopee.com/cpu.milli: 10k
+                quota.shopee.com/gpu-t4-15gb.compute.milli: 1k
+                quota.shopee.com/gpu-t4-15gb.memory: 15Gi
+                quota.shopee.com/memory: 20Gi
+                shopee.com/vcuda-core-t4-15gb: "100"
+                shopee.com/vcuda-memory-t4-15gb: "60"
+              requests:
+                cpu: "10"
+                ephemeral-storage: 100Gi
+                memory: 20Gi
+                quota.shopee.com/cpu.milli: 10k
+                quota.shopee.com/gpu-t4-15gb.compute.milli: 1k
+                quota.shopee.com/gpu-t4-15gb.memory: 15Gi
+                quota.shopee.com/memory: 20Gi
+                shopee.com/vcuda-core-t4-15gb: "100"
+                shopee.com/vcuda-memory-t4-15gb: "60"
+            volumeMounts:
+            - mountPath: /root/log
+              name: log-dir
+            - mountPath: /home/work/code/
+              name: git-repo-emptydir
+          initContainers:
+          - command:
+            - bash
+            - -c
+            - |2
+
+              mkdir -p /root/log/$POD_NAME;exec bash -c 'bash -c '"'"'echo -e "[http \"https://git.garena.com\"]\n\tproxy = aiproxy.shopee.io:80" > ~/.gitconfig && git config --system credential.helper store && echo "https://work:rMCssVApemuwb-iGybgQ@git.garena.com" > ~/.git-credentials && cd /home/work/code/ && git clone --recurse-submodules --progress --branch master "https://git.garena.com/shopee/MLP/aip-public/ray-user-guide.git" && chown -R work:work /home/work/code/'"'"' ' > >(tee /root/log/$POD_NAME/$POD_NAME-git-repo.log) 2>&1
+            env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SOC_QUOTA_EPHEMERAL_STORAGE
+              value: "85899345920"
+            image: harbor.shopeemobile.com/aip/aip-image-hub/dataset-cache/process-job-init:2024.05.24-hotfix_1.4.0_modelrepo-d6bcbd5
+            imagePullPolicy: IfNotPresent
+            name: git-repo
+            resources:
+              limits:
+                cpu: 100m
+                memory: 200Mi
+              requests:
+                cpu: 100m
+                memory: 200Mi
+            volumeMounts:
+            - mountPath: /root/log
+              name: log-dir
+            - mountPath: /home/work/code/
+              name: git-repo-emptydir
+          nodeSelector:
+            shopee.io/nodepool: ais-offline-gpu
+          tolerations:
+          - effect: NoSchedule
+            key: soc
+            operator: Exists
+          volumes:
+          - hostPath:
+              path: /data/log/soc-prod-job/158-3113703-0
+              type: DirectoryOrCreate
+            name: log-dir
+          - emptyDir: {}
+            name: git-repo-emptydir
+    workerGroupSpecs:
+    - groupName: gpu
+      maxReplicas: 2147483647
+      minReplicas: 0
+      rayStartParams:
+        metrics-export-port: "9090"
+      replicas: 1
+      scaleStrategy: {}
+      template:
+        metadata:
+          annotations:
+            execcmd: bash
+            package-type: gpu
+            prometheus.io/path: /metrics
+            prometheus.io/port: "9090"
+            prometheus.io/scrape: "true"
+            shopee.com/cni.vpc-id: aip-platform-live-git
+            soc.shopee.io/quota-name: off-lea-job-default-158
+            soc.shopee.io/resource-type: offline
+          labels:
+            controlled-by: soc
+            job-id: "3113703"
+            job-name: ray-guide-8
+            package-type: gpu
+            project-id: "158"
+            project-name: batch-process
+            soc.shopee.io/quota-name: off-lea-job-default-158
+            soc.shopee.io/resource-type: offline
+            task-name: gpu
+            app: ray-guide-label
+            tenant-id: "5648"
+            tenant-name: ai_platform
+        spec:
+          containers:
+          - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SOC_QUOTA_EPHEMERAL_STORAGE
+              value: "85899345920"
+            image: harbor.shopeemobile.com/aip/aip-image-hub/aip-grey/projects/74/ray-sample:ray-demo-6bc97f9727
+            imagePullPolicy: IfNotPresent
+            name: main
+            securityContext:
+              capabilities:
+                add:
+                - SYS_PTRACE
+            resources:
+              limits:
+                cpu: "10"
+                ephemeral-storage: 100Gi
+                memory: 20Gi
+                quota.shopee.com/cpu.milli: 10k
+                quota.shopee.com/gpu-t4-15gb.compute.milli: 1k
+                quota.shopee.com/gpu-t4-15gb.memory: 15Gi
+                quota.shopee.com/memory: 20Gi
+                shopee.com/vcuda-core-t4-15gb: "100"
+                shopee.com/vcuda-memory-t4-15gb: "60"
+              requests:
+                cpu: "10"
+                ephemeral-storage: 100Gi
+                memory: 20Gi
+                quota.shopee.com/cpu.milli: 10k
+                quota.shopee.com/gpu-t4-15gb.compute.milli: 1k
+                quota.shopee.com/gpu-t4-15gb.memory: 15Gi
+                quota.shopee.com/memory: 20Gi
+                shopee.com/vcuda-core-t4-15gb: "100"
+                shopee.com/vcuda-memory-t4-15gb: "60"
+            volumeMounts:
+            - mountPath: /root/log
+              name: log-dir
+            - mountPath: /home/work/code/
+              name: git-repo-emptydir
+          initContainers:
+          - command:
+            - bash
+            - -c
+            - |2
+
+              mkdir -p /root/log/$POD_NAME;exec bash -c 'bash -c '"'"'echo -e "[http \"https://git.garena.com\"]\n\tproxy = aiproxy.shopee.io:80" > ~/.gitconfig && git config --system credential.helper store && echo "https://work:rMCssVApemuwb-iGybgQ@git.garena.com" > ~/.git-credentials && cd /home/work/code/ && git clone --recurse-submodules --progress --branch master "https://git.garena.com/shopee/MLP/aip-public/ray-user-guide.git" && chown -R work:work /home/work/code/'"'"' ' > >(tee /root/log/$POD_NAME/$POD_NAME-git-repo.log) 2>&1
+            env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SOC_QUOTA_EPHEMERAL_STORAGE
+              value: "85899345920"
+            image: harbor.shopeemobile.com/aip/aip-image-hub/dataset-cache/process-job-init:2024.05.24-hotfix_1.4.0_modelrepo-d6bcbd5
+            imagePullPolicy: IfNotPresent
+            name: git-repo
+            resources:
+              limits:
+                cpu: 100m
+                memory: 200Mi
+              requests:
+                cpu: 100m
+                memory: 200Mi
+            volumeMounts:
+            - mountPath: /root/log
+              name: log-dir
+            - mountPath: /home/work/code/
+              name: git-repo-emptydir
+          nodeSelector:
+            shopee.io/nodepool: ais-offline-gpu
+          tolerations:
+          - effect: NoSchedule
+            key: soc
+            operator: Exists
+          volumes:
+          - hostPath:
+              path: /data/log/soc-prod-job/158-3113703-0
+              type: DirectoryOrCreate
+            name: log-dir
+          - emptyDir: {}
+            name: git-repo-emptydir
+  shutdownAfterJobFinishes: true
+  submitterPodTemplate:
+    metadata: {}
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: harbor.shopeemobile.com/aip/soc-image/raysubmitter:2.10.0
+        name: ray-job-submitter
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 200Mi
+        volumeMounts:
+        - mountPath: /ray_job/log
+          name: log-dir
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - chmod -R 777 /ray_job/log
+        image: harbor.shopeemobile.com/aip/soc-image/busybox
+        imagePullPolicy: IfNotPresent
+        name: soc-init
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - mountPath: /ray_job/log
+          name: log-dir
+      restartPolicy: Never
+      volumes:
+      - hostPath:
+          path: /data/log/soc-prod-job/158-3113703-0
+          type: DirectoryOrCreate
+        name: log-dir
+  ttlSecondsAfterFinished: 3600
